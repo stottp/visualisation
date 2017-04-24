@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Procurement Analysis</title>
+        <meta name="description" content="Muzza's Matrix">
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0"/> 
+		
+		<link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+         <link rel="stylesheet" href="main.css?v=1.0">
+		 
+		    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js">
+			
+			</script>
+		 
+		  
+		  <script type="text/javascript">
+			  //load in the packages
+			 google.charts.load('current', {packages: ['corechart', 'bar', 'controls', 'table']});
+		</script>
+			
+		  
+		  	<script type="text/javascript">
+			// Set a callback to run when the Google Visualization API is loaded.
+			 google.charts.setOnLoadCallback(drawBasic);
+			 google.charts.setOnLoadCallback(drawStack);
+			 google.charts.setOnLoadCallback(drawDurationGroup);
+			 google.charts.setOnLoadCallback(drawSupplierGroup);
+		     google.charts.setOnLoadCallback(drawDashboard);
+			 google.charts.setOnLoadCallback(drawTable);
+			
+
+//--------------------------------Basic Dashboard ------------- //
+
+			 //draw the dashboard
+			 function drawDashboard() {
+			 
+	 			// Create our data table.
+		         var dataDurationGroupDashboard = google.visualization.arrayToDataTable([
+		           ['Duration', 'e.on', 'TGP', 'npower', 'British Gas'],
+		           ['12M', 120000, 130000, 140000, 150000],
+		           ['24M', 125000, 135000, 145000, 155000],
+		           ['36M', 130000, 140000, 150000, 160000],
+		           ['48M', 135000, 145000, 145500, 165000]
+		         ]);
+
+	         // Create a dashboard.
+	         var dashboard = new google.visualization.Dashboard(
+	             document.getElementById('dashboard_div'));
+			 
+	         // Create a category filter, passing some options
+	         var donutCategoryFilter = new google.visualization.ControlWrapper({
+	           'controlType': 'CategoryFilter',
+	           'containerId': 'category_filter_div',
+			    'options': {
+				             filterColumnIndex: 0,
+				             ui: {
+								 selectedValuesLayout: 'below'
+				             }
+				         }
+	         });
+
+	         // Create a Column chart, passing some options
+	         var columnChart = new google.visualization.ChartWrapper({
+	           'chartType': 'ColumnChart',
+	           'containerId': 'chart_div_column',
+	           'options': {
+				   colors: ['#34495e', '#3498db', '#1abc9c', '#f1c40f']
+	           }
+	         });
+
+	         // Establish dependencies, declaring that 'filter' drives 'pieChart',
+	         // so that the pie chart will only display entries that are let through
+	         // given the chosen slider range.
+	         dashboard.bind(donutCategoryFilter, columnChart);
+
+	         // Draw the dashboard.
+	         dashboard.draw(dataDurationGroupDashboard);
+	       }
+		   
+		   
+		 //--------------------------------Basic Table ------------- //
+		  
+		   function drawTable() {
+		           var data = new google.visualization.DataTable();
+		           data.addColumn('string', 'Supplier');
+		           data.addColumn('number', 'Contract Cost');
+				   data.addColumn('number', 'Av. Annual Cost');
+				   data.addColumn('number', 'Duration (m)');
+		           data.addColumn('boolean', 'Fixed');
+				   data.addColumn('number', 'Diff. Current Cost');
+		           data.addRows([
+		             ['e.on',  {v: 120000, f: '£120,000'}, {v: 120000, f: '£120,000'}, {v: 12, f: '12M'}, true, {v: -5000, f: '£-5,000'}],
+					   ['e.on',  {v: 242000, f: '£242,000'}, {v: 121000, f: '£121,000'}, {v: 24, f: '24M'}, true, {v: -4000, f: '£-4,000'}],
+		             ['TGP',   {v: 123000, f: '£123,000'}, {v:130000,   f: '£130,000'}, {v: 12, f: '12M'}, false, {v: -2000, f: '£-3,000'}],
+		             ['npower', {v: 128000, f: '£128,000'}, {v: 128000, f: '£128,000'}, {v: 12, f: '12M'}, true, {v: 3000, f: '£3,000'}],
+		             ['British gas', {v: 130000, f: '£130,000'}, {v: 130000, f: '£130,000'}, {v: 12, f: '12M'},  true, {v: 5000, f: '£5,000'}]
+		           ]);
+
+		           var table = new google.visualization.Table(document.getElementById('table_div'));
+		           //table.draw(data, {showRowNumber: true, width: '100%', height: '100%'});
+				   table.draw(data, {showRowNumber: true, width: '100%'});
+		         }
+		   
+	   
+		 //--------------------------------Basic Chart ------------- //
+		 function drawBasic() {
+
+			 var data = google.visualization.arrayToDataTable([
+			          ['Supplier', 'Annual Cost', { role: 'style' }],
+					 	['e.on', 120000, 'color: #3498DB' ], // CSS-style declaration
+					 	['TGP', 130000, 'color: #3498DB' ],
+					 	['npower', 140000, 'color: #3498DB' ],
+				        ['British Gas', 150000, 'color: #3498DB' ]
+			       ]);
+
+		       var options = {
+		         title: 'Annual Spend',
+				   legend: { position: "none" },
+		         hAxis: {
+		           title: 'Energy Supplier',
+		         },
+		         vAxis: {
+		           title: 'Annual Energy Spend'
+		         }
+		       };
+
+		       var chart = new google.visualization.ColumnChart(
+		         document.getElementById('chart_div'));
+
+		       chart.draw(data, options);
+		     }
+			 
+			 
+			 function drawStack() {
+
+				 var dataStacked = google.visualization.arrayToDataTable([
+				         ['Energy Supplier', 'Wholsale', 'Distribution', 'Transmission', 'FiT', 'RO', 'VAT', 'CCL', { role: 'annotation' }],
+				        ['e.on', 60000, 20000, 10000, 5000, 2000, 1000, 500, ''],
+				        ['TGP', 70000, 20000, 10000, 5000, 2000, 1000, 500, ''],
+				        ['npower', 75000, 20000, 10000, 5000, 2000, 1000, 500, ''],
+					 	['British Gas', 80000, 20000, 10000, 5000, 2000, 1000, 500, ''],
+				      ]);
+
+				      var optionsStacked = {
+				        width: 600,
+				        height: 400,
+		 		         hAxis: {
+		 		           title: 'Energy Supplier',
+		 		         },
+						  colors: ['#1d6fa5', '#217dbb', '#258cd1','#3498db','#4aa3df','#5faee3','#75b9e7' ],
+				        legend: { position: 'top', maxLines: 3 },
+				        bar: { groupWidth: '75%' },
+				        isStacked: true,
+				      };
+
+			       var chartStacked = new google.visualization.ColumnChart(
+			         document.getElementById('chart_div_stacked'));
+
+			       chartStacked.draw(dataStacked, optionsStacked);
+			     }
+				 
+				 function drawDurationGroup() {
+				         var dataDurationGroup = google.visualization.arrayToDataTable([
+				           ['Duration', 'e.on', 'TGP', 'npower', 'British Gas'],
+				           ['12M', 120000, 130000, 140000, 150000],
+				           ['24M', 125000, 135000, 145000, 155000],
+				           ['36M', 130000, 140000, 150000, 160000],
+				           ['48M', 135000, 145000, 145500, 165000]
+				         ]);
+
+				         var optionsDurationGroup = {
+				           chart: {
+				             title: 'Annual Cost',
+				             subtitle: 'Annualised electricity costs July - June grouped by duration',
+				           },
+				           bars: 'vertical',
+		  		         hAxis: {
+		  		           title: 'Energy Supplier',
+		  		         },
+				           vAxis: {format: 'decimal'},
+				           height: 400,
+				           colors: ['#34495e', '#3498db', '#1abc9c', '#f1c40f']
+				         };
+
+				         var chartDurationGrouped = new google.charts.Bar(document.getElementById('chart_div_duration_group'));
+chartDurationGrouped.draw(dataDurationGroup,optionsDurationGroup);
+				       }
+					   
+	  				 function drawSupplierGroup() {
+	  				         var dataSupplierGroup = google.visualization.arrayToDataTable([
+	  				           ['Duration', '12M', '24M', '36M', '48M'],
+	  				           ['e.on', 120000, 125000, 130000, 135000],
+	  				           ['TGP', 130000, 135000, 140000, 145000],
+	  				           ['npower', 140000, 145000, 150000, 155000],
+	  				           ['British Gas', 150000, 155000, 160000, 165000]
+	  				         ]);
+
+	  				         var optionsSupplierGroup = {
+	  				           chart: {
+	  				             title: 'Annual Cost',
+	  				             subtitle: 'Annualised electricity costs July - June grouped by supplier',
+	  				           },
+	  				           bars: 'vertical',
+			  		         hAxis: {
+			  		           title: 'Energy Supplier',
+			  		         },
+	  				           vAxis: {format: 'decimal'},
+	  				           height: 400,
+	  				           colors: ['#34495e', '#3498db', '#1abc9c', '#f1c40f']
+	  				         };
+
+	  				         var chartDurationGrouped = new google.charts.Bar(document.getElementById('chart_div_supplier_group'));
+	  chartDurationGrouped.draw(dataSupplierGroup,optionsSupplierGroup);
+	  				       }
+				 
+				 
+				 </script>
+		 
+		<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/knockout/3.4.1/knockout-min.js"></script>
+		
+    </head>
+    <body>
+		<div class="wrapper">
+			<h1>Procurement Analysis</h1>
+			<h3>Simple Chart</h3>
+		    <div class="chart-style" id="chart_div"></div>
+			<br>
+			<h3>Stacked Chart</h3>
+		    <div class="chart-style" id="chart_div_stacked"></div>
+			<br>
+			<h3>Table Example</h3>
+		    <div class="table-style" id="table_div"></div>
+			<br>
+			<h3>Grouped Duration Chart</h3>
+		    <div class="chart-style" id="chart_div_duration_group"></div>
+			<br>
+			<h3>Grouped Supplier Chart</h3>
+		    <div class="chart-style" id="chart_div_supplier_group"></div>
+			<br>
+			<h3>Filter Duration</h3>
+			<!--Div that will hold the dashboard-->
+			<div id="dashboard_div">
+				<!--Divs that will hold each control and chart-->
+				<div class="filter-style" id="category_filter_div"></div>
+				<div class="chart-style" id="chart_div_column"></div>
+			</div>
+		</div>
+		<script type="text/javascript" src="viewmodel.js"></script>
+	</body>
+</html>
+
+
